@@ -42,29 +42,29 @@ git push origin main
 ### 4. Wait for GHA build
 - GHA workflow (`.github/workflows/*.yml`) runs on push to `main`:
   1. `release` job — bumps patch version tag (e.g. `v1.0.14`)
-  2. `build` job — builds and pushes Docker image to `ghcr.io/marx2/openst:<tag>`
+  2. `build` job — builds and pushes Docker image to `ghcr.io/marx-org/openst:<tag>`
 - Poll until complete:
 ```bash
-RUN_ID=$(gh run list --repo Marx2/openst --limit 1 --json databaseId -q '.[0].databaseId')
-gh run view $RUN_ID --repo Marx2/openst --json status,conclusion -q '.status + " " + .conclusion'
+RUN_ID=$(gh run list --repo marx-org/openst --limit 1 --json databaseId -q '.[0].databaseId')
+gh run view $RUN_ID --repo marx-org/openst --json status,conclusion -q '.status + " " + .conclusion'
 ```
 - If runner fails with "not acquired by hosted runner" → GitHub infra issue. Check https://www.githubstatus.com, then rerun:
 ```bash
-gh run rerun $RUN_ID --repo Marx2/openst --failed
+gh run rerun $RUN_ID --repo marx-org/openst --failed
 ```
 - Get new version tag after success:
 ```bash
-gh release list --repo Marx2/openst --limit 1
+gh release list --repo marx-org/openst --limit 1
 ```
 
 ### 5. Deploy (update helmrelease)
 Helmrelease path: `/Users/marx/prv/homelab/homelab/cluster/apps/pfire/openst/app/helmrelease.yaml`
 
-Update `tag:` field under `ghcr.io/marx2/openst`, then:
+Update `tag:` field under `ghcr.io/marx-org/openst`, then:
 ```bash
 cd /Users/marx/prv/homelab/homelab
 git add cluster/apps/pfire/openst/app/helmrelease.yaml
-git commit -m "chore(container): update image ghcr.io/marx2/openst to <tag>"
+git commit -m "chore(container): update image ghcr.io/marx-org/openst to <tag>"
 git pull --rebase && git push
 ```
 - Remote may have diverged (Renovate bot commits frequently) — always `pull --rebase` before push.
