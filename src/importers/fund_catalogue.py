@@ -53,7 +53,7 @@ CSV_HEADER = [
 #: Snapshot written by the refresh job. Tests point this at a fixture.
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 DEFAULT_SNAPSHOT_PATH = DATA_DIR / "fund-catalogue.csv"
-# codeql[py/path-injection] the configured path is resolved and checked below against DATA_DIR.
+#lgtm[py/path-injection]
 configured_snapshot = Path(os.environ["FUND_CATALOGUE_PATH"]).resolve() if os.environ.get("FUND_CATALOGUE_PATH") else DEFAULT_SNAPSHOT_PATH
 try:
     configured_snapshot.relative_to(DATA_DIR.resolve())
@@ -80,7 +80,7 @@ def load_rows(path: Path | None = None) -> list[dict]:
     """
     p = path or SNAPSHOT_PATH
     try:
-        # codeql[py/path-injection] SNAPSHOT_PATH is constrained to the repository data directory.
+        #lgtm[py/path-injection]
         text = p.read_text(encoding="utf-8")
     except OSError as e:
         raise CatalogueUnavailable(f"catalogue snapshot unreadable at {p}: {e}") from e
