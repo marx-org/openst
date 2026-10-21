@@ -51,10 +51,14 @@ CSV_HEADER = [
 ]
 
 #: Snapshot written by the refresh job. Tests point this at a fixture.
-SNAPSHOT_PATH = Path(
-    os.environ.get("FUND_CATALOGUE_PATH")
-    or Path(__file__).resolve().parents[2] / "data" / "fund-catalogue.csv"
-)
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+DEFAULT_SNAPSHOT_PATH = DATA_DIR / "fund-catalogue.csv"
+configured_snapshot = Path(os.environ["FUND_CATALOGUE_PATH"]).resolve() if os.environ.get("FUND_CATALOGUE_PATH") else DEFAULT_SNAPSHOT_PATH
+try:
+    configured_snapshot.relative_to(DATA_DIR.resolve())
+    SNAPSHOT_PATH = configured_snapshot
+except ValueError:
+    SNAPSHOT_PATH = DEFAULT_SNAPSHOT_PATH
 
 #: Every category on this source is PLN-denominated, and the snapshot carries the
 #: currency the source declared. ``search`` surfaces it, and step 5's consumer
