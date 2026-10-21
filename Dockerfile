@@ -1,10 +1,10 @@
-FROM python:3.15-slim AS builder
+FROM python:3.13-slim AS builder
 WORKDIR /build
 COPY requirements.txt .
 COPY plugins/ ./plugins/
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-FROM python:3.15-slim AS test
+FROM python:3.13-slim AS test
 WORKDIR /app
 COPY --from=builder /install /usr/local
 # the editable-install finder points at the source tree's absolute build path
@@ -19,7 +19,7 @@ COPY tests/ ./tests/
 COPY migrations/ ./migrations/
 CMD ["sh", "-c", "python -m pytest tests/ -v && python -m pytest plugins/openbb_biznesradar/tests/ -v && python -m pytest plugins/openbb_obligacje/tests/ -v && python -m pytest plugins/openbb_dividendmax/tests/ -v"]
 
-FROM python:3.15-slim AS runtime
+FROM python:3.13-slim AS runtime
 WORKDIR /app
 # APP_VERSION is passed by CI (release tag); falls back to 0.0.0-dev at runtime
 ARG APP_VERSION=""
