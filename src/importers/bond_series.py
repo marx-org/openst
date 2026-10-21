@@ -55,6 +55,7 @@ from datetime import date
 from decimal import Decimal
 
 import httpx
+from bs4 import BeautifulSoup
 
 from src import db
 
@@ -162,9 +163,10 @@ def _dec(value: str) -> Decimal:
 
 def _page_text(html: str) -> str:
     """Whole-page text with scripts/styles stripped and whitespace normalised."""
-    html = re.sub(r"<script.*?</script>", " ", html, flags=re.S)
-    html = re.sub(r"<style.*?</style>", " ", html, flags=re.S)
-    text = re.sub(r"<[^>]+>", " ", html)
+    soup = BeautifulSoup(html, "html.parser")
+    for node in soup(["script", "style"]):
+        node.decompose()
+    text = soup.get_text(" ")
     text = text.replace("\xa0", " ").replace(" ", " ")
     return re.sub(r"[ \t]+", " ", text)
 
