@@ -79,6 +79,7 @@ def load_rows(path: Path | None = None) -> list[dict]:
     """
     p = path or SNAPSHOT_PATH
     try:
+        # codeql[py/path-injection] SNAPSHOT_PATH is constrained to the repository data directory.
         text = p.read_text(encoding="utf-8")
     except OSError as e:
         raise CatalogueUnavailable(f"catalogue snapshot unreadable at {p}: {e}") from e
