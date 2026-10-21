@@ -53,6 +53,7 @@ CSV_HEADER = [
 #: Snapshot written by the refresh job. Tests point this at a fixture.
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 DEFAULT_SNAPSHOT_PATH = DATA_DIR / "fund-catalogue.csv"
+# codeql[py/path-injection] the configured path is resolved and checked below against DATA_DIR.
 configured_snapshot = Path(os.environ["FUND_CATALOGUE_PATH"]).resolve() if os.environ.get("FUND_CATALOGUE_PATH") else DEFAULT_SNAPSHOT_PATH
 try:
     configured_snapshot.relative_to(DATA_DIR.resolve())
