@@ -1,10 +1,10 @@
-openbb==4.7.2
-openbb-crypto==1.6.2
+openbb==5.0.0
+openbb-crypto==2.0.0
 openbb-polygon==1.5.1
-openbb-nasdaq==1.6.3
-openbb-cboe==1.6.1
-openbb-tmx==1.5.2
-openbb-sec==1.6.7
+openbb-nasdaq==2.0.0
+openbb-cboe==2.0.0
+openbb-tmx==2.0.0
+openbb-sec==2.0.0
 redis==8.1.0
 psycopg2-binary==2.9.13
 python-dotenv==1.2.4
