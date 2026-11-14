@@ -68,17 +68,32 @@ def test_extract_data_unknown_symbol_returns_empty(fake_conn):
 
 
 def test_extract_data_prices_cpi_linked_series(fake_conn):
+    # Dates are relative to today so the 40-day CPI staleness guard cannot rot:
+    # the observation is recent, and the bond is issued the month after it (the
+    # engine prices period 1 from the CPI published the month before issue).
+    today = date.today()
+    cpi_latest = today - timedelta(days=5)
+    issue = date(
+        cpi_latest.year + (1 if cpi_latest.month == 12 else 0),
+        1 if cpi_latest.month == 12 else cpi_latest.month + 1,
+        1,
+    )
+    maturity = date(issue.year + 10, issue.month, issue.day)
     fake_conn.cursor_obj._rows_by_sql = {
-        "WHERE symbol = %s": [_bond_row()],
-        _CPI_12M: [_cpi_row(date(2026, 8, 31), "3.00"), _cpi_row(date(2026, 9, 30), "3.50")],
-        _LATEST_CPI: [(date(2026, 9, 30),)],
+        "WHERE symbol = %s": [_bond_row(issue_date=issue, maturity_date=maturity)],
+        _CPI_12M: [_cpi_row(cpi_latest, "3.00")],
+        _LATEST_CPI: [(cpi_latest,)],
     }
     q = FixedIncomeHistoricalFetcher.transform_query(
-        {"symbol": "EDO0936", "start_date": "2026-09-01", "end_date": "2026-09-02"}
+        {
+            "symbol": "EDO0936",
+            "start_date": issue.isoformat(),
+            "end_date": (issue + timedelta(days=1)).isoformat(),
+        }
     )
     rows = FixedIncomeHistoricalFetcher.extract_data(q)
     assert len(rows) == 2
-    assert rows[0]["date"] == "2026-09-01"
+    assert rows[0]["date"] == issue.isoformat()
     assert rows[0]["close"] == 100.0
     assert rows[1]["open"] == 100.0
     assert rows[1]["close"] == 100.0
